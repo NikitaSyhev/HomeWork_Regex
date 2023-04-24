@@ -4,40 +4,70 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-
+using System.IO;
 namespace HomeWork4
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Tasl 1");
-            string input = "23 * 45 =";
-            var regexpLeft = new Regex(@"\d+\s*(\+|\-|\*|\/)");
-            var regexpRigth = new Regex(@"(\+|\-|\*|\/)\s*\d+");
-            var regNumber = new Regex(@"\d+");
-            var regexpOperation = new Regex(@"(\+|\-|\*|\/)");
-            MatchCollection matchesLeft = regexpLeft.Matches(input);
-            MatchCollection matchesRigth = regexpRigth.Matches(input);
-            foreach (Match match in matchesLeft)
-            {
-                Console.WriteLine("Левый операнд и операция : "
-                    + match.ToString());
-                MatchCollection numberLeft =
-                    regNumber.Matches(match.ToString());
-                Console.WriteLine("Левый операнд : "
-                    + numberLeft[0]);
-            }
-            foreach (Match match in matchesRigth)
-            {
-                Console.WriteLine("Правый операнд и операция : "
-                    + match.ToString());
-                MatchCollection numberRigth =
-                    regNumber.Matches(match.ToString());
-                Console.WriteLine("Правый операнд : "
-                    + numberRigth[0]);
-                Console.ReadLine();
-            }
+            Console.WriteLine("Task 1");
+           
+            string inputFilename = "text.txt";
+            string outputFilename = "solution.txt";
+
+            bool appendResults = File.Exists(outputFilename);
+                try
+                {
+                    using (StreamReader reader = new StreamReader(inputFilename))
+                    {
+                        using (StreamWriter writer = new StreamWriter(outputFilename, appendResults))
+                        {
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                try
+                                {
+                                    Match match = Regex.Match(line, @"(\d+)\s*([-+*/])\s*(\d+)\s*=");
+                                    if (match.Success)
+                                    {
+                                        int leftOperand = int.Parse(match.Groups[1].Value);
+                                        char oper = match.Groups[2].Value[0];
+                                        int rightOperand = int.Parse(match.Groups[3].Value);
+                                        int result;
+                                        switch (oper )
+                                        {
+                                            case '+': result = leftOperand + rightOperand; break;
+                                            case '-': result = leftOperand - rightOperand; break;
+                                            case '*': result = leftOperand * rightOperand; break;
+                                            case '/': result = leftOperand / rightOperand; break;
+                                            default: throw new InvalidOperationException($"Неизвестный оператор");
+                                        }
+                                        writer.WriteLine($"{line.Trim()} {result}");
+                                    }
+                                    else
+                                    {
+                                        writer.WriteLine($"{line.Trim()} ERROR: Invalid format");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    writer.WriteLine($"{line.Trim()} ERROR: {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    Console.WriteLine($"ERROR: {ex.Message}");
+                }
+
+            Console.ReadLine();
+        }
+           
+            
         }
     }
-}
+
