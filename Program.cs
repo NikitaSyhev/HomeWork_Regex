@@ -162,6 +162,22 @@ namespace HomeWork4
 
 
             Console.WriteLine("Task4");
+            // Есть каталог A где хранятся файл с общим доступом и каталог B, где хранятся копии этого файла(с суфиксом времени копирования) для
+            // возможности восстановления.
+            //Программа должна проверять время изменения файла в каталоге А и создавать его копию в каталоге B, если время его изменения позже,
+            //чем последнее время изменения в каталоге копий.
+
+            string catalog_A = @"C:\Users\nosychev\Desktop\Programmatic\С#\HomeWork4\HomeWork4\bin\Debug";
+            string catalog_B = @"C:\Users\nosychev\Desktop\Programmatic\С#\HomeWork4\HomeWork4\bin";
+            Directory.GetCreationTime(catalog_A); // метод получения времени каталога 1
+            Directory.GetCreationTime(catalog_B); // метод получения времени каталога 2
+            if (Directory.GetCreationTime(catalog_A) > Directory.GetCreationTime(catalog_B))
+            {
+                File.Copy(catalog_A, catalog_B, true);
+            }
+
+
+
             Console.ReadLine();
         }
            
